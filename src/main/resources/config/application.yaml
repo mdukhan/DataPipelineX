@@ -1,0 +1,11 @@
+spring:
+  kafka:
+    consumer:
+      auto-offset-reset: latest
+      group-id: org.example-untitled
+
+kafka:
+  consumer:
+    topic: foo
+  producer:
+    topic: bar
