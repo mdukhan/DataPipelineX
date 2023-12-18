@@ -1,7 +1,7 @@
 package org.example.records;
 
 public record Movie(
-        Integer movieId,
+        Integer Id,
 
         String title,
 

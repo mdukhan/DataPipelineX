@@ -13,14 +13,12 @@ public class Consumer {
   private static final Logger LOG = LoggerFactory.getLogger(App.class);
 
   @Autowired
-  private Producer producer;
+  private MovieProducer producer;
 
   @KafkaListener(topics = "${kafka.consumer.topic}")
   public void onMessage(ConsumerRecord<String, String> record) {
     LOG.info("Received record [{}]", record.value());
     producer.send(record.value());
   }
-
-
 }
 
