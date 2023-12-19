@@ -1,11 +1,17 @@
 spring:
+  profiles:
+    active: local
+server:
+  port: 8081
+---
+spring:
+  config:
+    activate:
+      on-profile: local
   kafka:
+    topic: movies
     consumer:
-      auto-offset-reset: latest
-      group-id: org.example-movie-consumer
-
-kafka:
-  consumer:
-    topic: foo
-  producer:
-    topic: bar
+      bootstrap-servers: localhost:9092
+      key-deserializer: org.apache.kafka.common.serialization.IntegerDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      group-id: movies-listener-group
