@@ -6,9 +6,13 @@
   <groupId>org.example</groupId>
   <artifactId>CSV-DB-Converter</artifactId>
   <version>1.0-SNAPSHOT</version>
-  <packaging>jar</packaging>
+  <packaging>pom</packaging>
+    <modules>
+        <module>movie-consumer</module>
+      <module>movie-producer</module>
+    </modules>
 
-  <parent>
+    <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
     <version>3.2.0</version>

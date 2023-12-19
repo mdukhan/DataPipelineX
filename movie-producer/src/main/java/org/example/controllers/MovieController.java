@@ -1,24 +1,19 @@
 package org.example.controllers;
 
-import com.opencsv.CSVReader;
-import com.opencsv.bean.CsvToBean;
-import com.opencsv.bean.CsvToBeanBuilder;
+
 import lombok.extern.slf4j.Slf4j;
 import org.example.records.Movie;
 import org.example.services.MovieService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.FileNotFoundException;
+
 import java.io.IOException;
-import java.io.StringReader;
 import java.util.List;
-import java.util.Arrays;
 
 @RestController
 @Slf4j

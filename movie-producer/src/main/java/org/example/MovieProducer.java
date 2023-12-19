@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 public class MovieProducer {
 
 
-  @Value("${kafka.producer.topic}")
+  @Value("${spring.kafka.topic}")
   private String topic;
 
   @Autowired
