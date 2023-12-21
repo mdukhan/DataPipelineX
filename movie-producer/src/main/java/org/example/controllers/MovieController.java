@@ -2,12 +2,15 @@ package org.example.controllers;
 
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.example.records.Movie;
 import org.example.services.MovieService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -72,8 +75,12 @@ public class MovieController {
      * @throws JsonProcessingException if there is an issue processing JSON.
      */
     @PostMapping("/v1/movie")
-    public ResponseEntity<Movie> postMovie(@RequestBody Movie movie)
+    public ResponseEntity<?> postMovie(@RequestBody @Valid Movie movie)
     throws JsonProcessingException {
+
+        if (movie.Id() == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Please pass the MovieId");
+        }
 
         movieService.sendMovie(movie);
         return ResponseEntity.status(HttpStatus.CREATED).body(movie);

@@ -4,12 +4,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.producers.MovieProducer;
 import org.example.records.Movie;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @Slf4j
@@ -70,8 +72,8 @@ public class MovieService {
         movieProducer.sendMovieRecord(movie);
     }
 
-    public void sendMovie(Movie movie){
-        movieProducer.sendMovieRecord(movie);
-    }
+    public CompletableFuture<SendResult<Integer, String>> sendMovie(Movie movie){
 
+        return movieProducer.sendMovieRecord(movie);
+    }
 }
