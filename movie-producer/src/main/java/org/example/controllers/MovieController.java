@@ -60,7 +60,7 @@ public class MovieController {
                 movieService.sendMoviebyId(movieList, movie.Id());
                 log.info("Message sent successfully {}", ResponseEntity.status(HttpStatus.CREATED).body(movie));
             }
-           return ResponseEntity.status(HttpStatus.CREATED).body(movieList.toString());
+            return ResponseEntity.status(HttpStatus.CREATED).body(movieList.toString());
         } catch (IOException e) {
             e.printStackTrace(); // Handle the exception appropriately in your application
             return ResponseEntity.status(500).body("Error processing the file");
@@ -76,7 +76,7 @@ public class MovieController {
      */
     @PostMapping("/v1/movie")
     public ResponseEntity<?> postMovie(@RequestBody @Valid Movie movie)
-    throws JsonProcessingException {
+            throws JsonProcessingException {
 
         if (movie.Id() == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Please pass the MovieId");

@@ -27,7 +27,7 @@ public class MovieService {
     }
 
 
-    public  Movie getMovie(List<Movie> movieRecordsList, int movieId) {
+    public Movie getMovie(List<Movie> movieRecordsList, int movieId) {
         for (Movie movieRecord : movieRecordsList) {
             if (movieId == movieRecord.Id()) {
                 log.info(String.format("Es wurde der Film: %s ausgewählt.", movieRecord.title()));
@@ -39,7 +39,7 @@ public class MovieService {
         return null;
     }
 
-    public  List<Movie> getMovieListFromPath(final String filePath) throws FileNotFoundException {
+    public List<Movie> getMovieListFromPath(final String filePath) throws FileNotFoundException {
         List<Movie> movieList = new ArrayList<>();
         try (BufferedReader bufferedReader = new BufferedReader(new FileReader(filePath))) {
             String line;
@@ -66,13 +66,13 @@ public class MovieService {
     }
 
 
-    public void sendMoviebyId(List<Movie> movieList,int Id) throws FileNotFoundException {
+    public void sendMoviebyId(List<Movie> movieList, int Id) throws FileNotFoundException {
 
-        Movie movie = getMovie(movieList,Id);
+        Movie movie = getMovie(movieList, Id);
         movieProducer.sendMovieRecord(movie);
     }
 
-    public CompletableFuture<SendResult<Integer, String>> sendMovie(Movie movie){
+    public CompletableFuture<SendResult<Integer, String>> sendMovie(Movie movie) {
 
         return movieProducer.sendMovieRecord(movie);
     }
