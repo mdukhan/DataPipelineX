@@ -67,8 +67,11 @@ public class MovieService {
     public void sendMoviebyId(List<Movie> movieList,int Id) throws FileNotFoundException {
 
         Movie movie = getMovie(movieList,Id);
-        log.info(movie.toString());
-        movieProducer.sendmovieRecordwithId(movie);
+        movieProducer.sendMovieRecord(movie);
+    }
+
+    public void sendMovie(Movie movie){
+        movieProducer.sendMovieRecord(movie);
     }
 
 }
