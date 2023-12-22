@@ -11,7 +11,7 @@ pipelines:
       - step:
           name: 'Build and Test'
           script:
-            - echo "mvn clean install"
+            - "mvn clean install"
       - step:
           name: 'Lint'
           script:
