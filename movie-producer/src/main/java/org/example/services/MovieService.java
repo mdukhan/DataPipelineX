@@ -1,5 +1,6 @@
 package org.example.services;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.extern.slf4j.Slf4j;
 import org.example.producers.MovieProducer;
 import org.example.records.Movie;
@@ -66,13 +67,13 @@ public class MovieService {
     }
 
 
-    public void sendMoviebyId(List<Movie> movieList, int Id) throws FileNotFoundException {
+    public void sendMoviebyId(List<Movie> movieList, int Id) throws FileNotFoundException, JsonProcessingException {
 
         Movie movie = getMovie(movieList, Id);
         movieProducer.sendMovieRecord(movie);
     }
 
-    public CompletableFuture<SendResult<Integer, String>> sendMovie(Movie movie) {
+    public CompletableFuture<SendResult<Integer, String>> sendMovie(Movie movie) throws JsonProcessingException {
 
         return movieProducer.sendMovieRecord(movie);
     }

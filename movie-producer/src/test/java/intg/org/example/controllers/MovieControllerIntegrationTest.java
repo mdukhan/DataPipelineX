@@ -11,10 +11,8 @@ import org.example.records.Movie;
 import org.example.util.TestUtil;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.*;
@@ -84,7 +82,7 @@ class MovieControllerIntegrationTest {
         Movie movie = TestUtil.movieRecord();
 
         HttpHeaders headers = new HttpHeaders();
-        objectMapper.writeValueAsString(movie);
+        String movieJson = objectMapper.writeValueAsString(movie);
         headers.set("content-type", MediaType.APPLICATION_JSON.toString());
         HttpEntity<Movie> request = new HttpEntity<>(movie, headers);
 
@@ -98,7 +96,7 @@ class MovieControllerIntegrationTest {
         //Thread.sleep(3000);
         assert consumerRecords.count() == 1;
         consumerRecords.forEach(record -> {
-            assertEquals(movie.toString(), record.value());
+            assertEquals(movieJson, record.value());
         });
     }
 }

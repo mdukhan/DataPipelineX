@@ -1,5 +1,7 @@
 package org.example.producers;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.example.records.Movie;
@@ -25,6 +27,9 @@ public class MovieProducer {
     @Autowired
     private KafkaTemplate<Integer, String> kafkaTemplate;
 
+    @Autowired
+    ObjectMapper objectMapper;
+
 
     /**
      * Asynchronously sends a movie record to the configured Kafka topic.
@@ -32,18 +37,18 @@ public class MovieProducer {
      * @param movie The Movie object to be sent.
      * @return A CompletableFuture representing the result of the send operation.
      */
-    public CompletableFuture<SendResult<Integer, String>> sendMovieRecord(Movie movie) {
+    public CompletableFuture<SendResult<Integer, String>> sendMovieRecord(Movie movie) throws JsonProcessingException {
         Integer key = movie.Id();
-        String value = movie.toString();
+        String jsonValue = objectMapper.writeValueAsString(movie);
 
-        ProducerRecord<Integer, String> producerRecord = new ProducerRecord<>(topic, key, value);
+        ProducerRecord<Integer, String> producerRecord = new ProducerRecord<>(topic, key, jsonValue);
         var completableFuture = kafkaTemplate.send(producerRecord);
         return completableFuture
                 .whenComplete((sendResult, throwable) -> {
                     if (throwable != null) {
-                        handleFailure(key, value, throwable);
+                        handleFailure(key, jsonValue, throwable);
                     } else {
-                        handleSuccess(key, value, sendResult);
+                        handleSuccess(key, jsonValue, sendResult);
                     }
                 });
     }
