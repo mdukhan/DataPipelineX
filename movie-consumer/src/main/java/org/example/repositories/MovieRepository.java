@@ -5,5 +5,8 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 
+/**
+ * Repository interface for managing Movie entities.
+ */
 public interface MovieRepository extends CrudRepository<Movie, Integer> {
 }

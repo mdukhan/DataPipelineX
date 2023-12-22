@@ -1,0 +1,30 @@
+docker commands
+
+docker-compose up/down
+
+#start a specific docker .yml file
+docker-compose -f filename.yml up/down
+
+
+
+#######################################
+curl commands
+
+#Files
+curl -X POST -H "Content-Type: multipart/form-data" -F "file=@./movies_short.csv" http://localhost:8080/api/upload-csv-file
+
+
+#Data
+curl -X POST -H "Content-Type: text/plain" --data-binary @./movies_short.csv http://localhost:8080/api/upload-csv-file-1
+
+
+#JSON
+curl -X POST \
+  http://localhost:8080/v1/movie \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "Id": 1,
+    "title": "Inception",
+    "genres": "Sci-Fi"
+}'
+

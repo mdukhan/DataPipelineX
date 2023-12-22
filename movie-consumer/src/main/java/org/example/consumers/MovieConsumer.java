@@ -9,6 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
+/**
+ * Kafka message consumer for movie data.
+ */
 @Component
 @Slf4j
 public class MovieConsumer {
@@ -16,6 +19,12 @@ public class MovieConsumer {
     @Autowired
     MovieService movieService;
 
+    /**
+     * Listens for messages on the "movies" topic and processes them using the MovieService.
+     *
+     * @param consumerRecord The Kafka ConsumerRecord containing movie data.
+     * @throws JsonProcessingException If there's an issue processing JSON data.
+     */
     @KafkaListener(topics = {"movies"})
     public void onMessage(ConsumerRecord<Integer, String> consumerRecord) throws JsonProcessingException {
 
