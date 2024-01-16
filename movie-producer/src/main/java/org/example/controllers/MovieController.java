@@ -5,14 +5,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.example.records.Movie;
+import org.example.records.MovieType;
 import org.example.services.MovieService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 
@@ -79,8 +77,39 @@ public class MovieController {
         if (movie.Id() == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Please pass the MovieId");
         }
+        if(!MovieType.NEW.equals(movie.movieType()))  {
+            Movie movieWithNewType = new Movie(movie.Id(), MovieType.NEW, movie.title(), movie.genres());
+            movieService.sendMovie(movieWithNewType);
+            return ResponseEntity.status(HttpStatus.CREATED).body(movieWithNewType);
+        }else {
+            movieService.sendMovie(movie);
+            return ResponseEntity.status(HttpStatus.CREATED).body(movie);
+        }
+    }
 
-        movieService.sendMovie(movie);
-        return ResponseEntity.status(HttpStatus.CREATED).body(movie);
+    /**
+     * Endpoint for updating a movie.
+     *
+     * @param movie The Movie object to be added.
+     * @return ResponseEntity with the result of the movie addition operation.
+     * @throws JsonProcessingException if there is an issue processing JSON.
+     */
+    @PutMapping("/v1/movie")
+    public ResponseEntity<?> putMovie(@RequestBody @Valid Movie movie) throws JsonProcessingException {
+
+        if (movie.Id() == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Please pass the MovieId");
+        }
+
+        if (!MovieType.UPDATE.equals(movie.movieType()))  {
+            log.info("Inside the if block");
+           Movie movieWithUpdate = new Movie(movie.Id(), MovieType.UPDATE, movie.title(), movie.genres());
+            movieService.sendMovie(movieWithUpdate);
+            return ResponseEntity.status(HttpStatus.OK).body(movieWithUpdate);
+        }else {
+
+            movieService.sendMovie(movie);
+            return ResponseEntity.status(HttpStatus.OK).body(movie);
+        }
     }
 }

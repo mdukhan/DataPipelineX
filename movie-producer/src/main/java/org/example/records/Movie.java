@@ -7,6 +7,7 @@ import jakarta.validation.constraints.NotNull;
 public record Movie(
         @NotNull
         Integer Id,
+        MovieType movieType,
         @NotBlank
         String title,
         @NotBlank

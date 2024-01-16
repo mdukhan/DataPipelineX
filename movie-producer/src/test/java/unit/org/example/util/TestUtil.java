@@ -1,6 +1,7 @@
 package org.example.util;
 
 import org.example.records.Movie;
+import org.example.records.MovieType;
 
 /**
  * Utility class for testing purposes.
@@ -13,7 +14,7 @@ public class TestUtil {
      * @return A Movie object with valid values.
      */
     public static Movie movieRecord() {
-        return new Movie(1, "Inception", "Sci-Fi");
+        return new Movie(1, MovieType.NEW,"Inception", "Sci-Fi");
     }
 
     /**
@@ -22,6 +23,6 @@ public class TestUtil {
      * @return A Movie object with null and empty values.
      */
     public static Movie movieRecordWithInvalidValues() {
-        return new Movie(null, "", "");
+        return new Movie(null, null,"", "");
     }
 }

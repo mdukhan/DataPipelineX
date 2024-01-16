@@ -28,3 +28,13 @@ curl -X POST \
     "genres": "Sci-Fi"
 }'
 
+curl -X PUT \
+  http://localhost:8080/v1/movie \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "Id": 2,
+    "title": "Toy Story",
+    "genres": "Adventure"
+}'
+
+
