@@ -25,9 +25,13 @@ public class MovieProducer {
     private String topic;
 
     @Autowired
+    public MovieProducer(KafkaTemplate<Integer, String> kafkaTemplate,ObjectMapper objectMapper){
+        this.kafkaTemplate=kafkaTemplate;
+        this.objectMapper=objectMapper;
+    }
+
     private KafkaTemplate<Integer, String> kafkaTemplate;
 
-    @Autowired
     ObjectMapper objectMapper;
 
 

@@ -9,6 +9,8 @@ import org.example.repositories.MovieRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 /**
  * Service for processing movie data from Kafka messages.
  */
@@ -30,8 +32,39 @@ public class MovieService {
      */
     public void processMovie(ConsumerRecord<Integer, String> consumerRecord) throws JsonProcessingException {
         Movie movie = objectMapper.readValue(consumerRecord.value(), Movie.class);
+        movie.setId(consumerRecord.key());
         log.info("Movie : {} ", movie);
-        save(movie);
+
+        switch (movie.getMovieType()) {
+            case NEW:
+                save(movie);
+                break;
+            case UPDATE:
+                //validate the libraryevent
+                validate(movie);
+                save(movie);
+                break;
+            default:
+                log.info("Invalid Movie Type");
+        }
+    }
+
+    /**
+     * validates if a movie.Id does exist in the databases, then replace(update) that movie.
+     *
+     * @param movie the movie to be added
+     * @throws IllegalArgumentException if the movie.Id is not found.
+     */
+    private void validate(Movie movie) {
+        if (movie.getId() == null) {
+            throw new IllegalArgumentException("Movie Id is missing");
+        }
+
+        Optional<Movie> movieOptional = movieRepository.findById(movie.getId());
+        if (!movieOptional.isPresent()) {
+            throw new IllegalArgumentException("No movie in the database was found. Please insert firstly a movie!");
+        }
+        log.info("updating the movie... : {} ", movieOptional.get());
     }
 
     /**

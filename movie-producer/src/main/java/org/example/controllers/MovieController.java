@@ -32,7 +32,6 @@ public class MovieController {
      *
      * @param movieService The MovieService to be injected.
      */
-    @Autowired
     public MovieController(MovieService movieService) {
         this.movieService = movieService;
     }

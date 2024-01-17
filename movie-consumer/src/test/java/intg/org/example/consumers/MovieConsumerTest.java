@@ -101,8 +101,7 @@ class MovieConsumerTest {
     @Test
     void publishNewMovie() throws ExecutionException, InterruptedException, JsonProcessingException {
         // Given a JSON representation of a movie
-        String json = "{\n" + "    \"Id\": 1,\n" + "    \"title\": \"Inception\",\n" + "    \"genres\": \"Sci-Fi\"\n" + "}";
-
+        String json= "{\"Id\":1,\"movieType\":\"NEW\",\"title\":\"Inception\",\"genres\":\"Sci-Fi\"}";
         // When publishing the movie to the "movies" topic
         ProducerRecord<Integer, String> producerRecord = new ProducerRecord<>("movies", 1, json);
         kafkaTemplate.send(producerRecord);

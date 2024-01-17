@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.extern.slf4j.Slf4j;
 import org.example.producers.MovieProducer;
 import org.example.records.Movie;
+import org.example.records.MovieType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Service;
@@ -21,9 +22,7 @@ public class MovieService {
 
     private final MovieProducer movieProducer;
 
-
-    @Autowired
-    public MovieService(MovieProducer movieProducer) throws FileNotFoundException {
+    public MovieService(MovieProducer movieProducer) {
         this.movieProducer = movieProducer;
     }
 
@@ -32,6 +31,7 @@ public class MovieService {
         for (Movie movieRecord : movieRecordsList) {
             if (movieId == movieRecord.Id()) {
                 log.info(String.format("Es wurde der Film: %s ausgewählt.", movieRecord.title()));
+                log.info(String.format(movieRecord.movieType().toString()));
                 log.info(String.format(movieRecord.genres().contains("|") ? "Genres: %s" : "Genre: %s", movieRecord.genres()));
                 log.info(movieRecord.toString());
                 return movieRecord;
@@ -46,7 +46,7 @@ public class MovieService {
             String line;
             while ((line = bufferedReader.readLine()) != null) {
                 String[] values = line.split(",");
-                movieList.add(new Movie(Integer.parseInt(values[0]), values[1], values[2]));
+                movieList.add(new Movie(Integer.parseInt(values[0]), MovieType.NEW,values[1], values[2]));
             }
         } catch (IOException e) {
             throw new FileNotFoundException(filePath);
@@ -60,7 +60,7 @@ public class MovieService {
             String line;
             while ((line = bufferedReader.readLine()) != null) {
                 String[] values = line.split(",");
-                movieList.add(new Movie(Integer.parseInt(values[0]), values[1], values[2]));
+                movieList.add(new Movie(Integer.parseInt(values[0]), MovieType.NEW,values[1], values[2]));
             }
         }
         return movieList;
