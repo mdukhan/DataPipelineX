@@ -11,6 +11,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Component;
 
+import java.sql.PreparedStatement;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -24,7 +25,7 @@ public class MovieProducer {
     @Value("${spring.kafka.topic}")
     private String topic;
 
-    @Autowired
+
     public MovieProducer(KafkaTemplate<Integer, String> kafkaTemplate,ObjectMapper objectMapper){
         this.kafkaTemplate=kafkaTemplate;
         this.objectMapper=objectMapper;
@@ -77,6 +78,7 @@ public class MovieProducer {
      */
     private void handleSuccess(Integer key, String value, SendResult<Integer, String> result) {
         log.info("Message sent successfully for the key : {} and the value is {} , partition is {}", key, value);
+
     }
 
 }

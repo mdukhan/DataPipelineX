@@ -18,11 +18,14 @@ import java.util.Optional;
 @Slf4j
 public class MovieService {
 
-    @Autowired
     ObjectMapper objectMapper;
 
-    @Autowired
     private MovieRepository movieRepository;
+
+    public MovieService(ObjectMapper objectMapper, MovieRepository movieRepository){
+        this.objectMapper=objectMapper;
+        this.movieRepository=movieRepository;
+    }
 
     /**
      * Processes a movie received from Kafka.

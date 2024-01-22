@@ -16,8 +16,11 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class MovieConsumer {
 
-    @Autowired
     MovieService movieService;
+
+    public MovieConsumer(MovieService movieService){
+        this.movieService=movieService;
+    }
 
     /**
      * Listens for messages on the "movies" topic and processes them using the MovieService.

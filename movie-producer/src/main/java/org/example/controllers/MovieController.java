@@ -7,7 +7,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.records.Movie;
 import org.example.records.MovieType;
 import org.example.services.MovieService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,7 +22,6 @@ import java.util.List;
 @RestController
 @Slf4j
 public class MovieController {
-
 
     private final MovieService movieService;
 
@@ -52,7 +50,7 @@ public class MovieController {
             // Pass the MultipartFile to the MovieService for processing
             List<Movie> movieList = movieService.getMovieListFromFile(csvFile);
             for (Movie movie : movieList) {
-                movieService.sendMoviebyId(movieList, movie.Id());
+                movieService.sendMovieById(movieList, movie.Id());
                 log.info("Message sent successfully {}", ResponseEntity.status(HttpStatus.CREATED).body(movie));
             }
             return ResponseEntity.status(HttpStatus.CREATED).body(movieList.toString());

@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.producers.MovieProducer;
 import org.example.records.Movie;
 import org.example.records.MovieType;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -19,13 +18,11 @@ import java.util.concurrent.CompletableFuture;
 @Slf4j
 public class MovieService {
 
-
     private final MovieProducer movieProducer;
 
     public MovieService(MovieProducer movieProducer) {
         this.movieProducer = movieProducer;
     }
-
 
     public Movie getMovie(List<Movie> movieRecordsList, int movieId) {
         for (Movie movieRecord : movieRecordsList) {
@@ -46,7 +43,7 @@ public class MovieService {
             String line;
             while ((line = bufferedReader.readLine()) != null) {
                 String[] values = line.split(",");
-                movieList.add(new Movie(Integer.parseInt(values[0]), MovieType.NEW,values[1], values[2]));
+                movieList.add(new Movie(Integer.parseInt(values[0]), MovieType.NEW, values[1], values[2]));
             }
         } catch (IOException e) {
             throw new FileNotFoundException(filePath);
@@ -60,14 +57,14 @@ public class MovieService {
             String line;
             while ((line = bufferedReader.readLine()) != null) {
                 String[] values = line.split(",");
-                movieList.add(new Movie(Integer.parseInt(values[0]), MovieType.NEW,values[1], values[2]));
+                movieList.add(new Movie(Integer.parseInt(values[0]), MovieType.NEW, values[1], values[2]));
             }
         }
         return movieList;
     }
 
 
-    public void sendMoviebyId(List<Movie> movieList, int Id) throws FileNotFoundException, JsonProcessingException {
+    public void sendMovieById(List<Movie> movieList, int Id) throws FileNotFoundException, JsonProcessingException {
 
         Movie movie = getMovie(movieList, Id);
         movieProducer.sendMovieRecord(movie);
