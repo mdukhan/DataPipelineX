@@ -26,9 +26,9 @@ public class MovieProducer {
     private String topic;
 
 
-    public MovieProducer(KafkaTemplate<Integer, String> kafkaTemplate,ObjectMapper objectMapper){
-        this.kafkaTemplate=kafkaTemplate;
-        this.objectMapper=objectMapper;
+    public MovieProducer(KafkaTemplate<Integer, String> kafkaTemplate, ObjectMapper objectMapper) {
+        this.kafkaTemplate = kafkaTemplate;
+        this.objectMapper = objectMapper;
     }
 
     private KafkaTemplate<Integer, String> kafkaTemplate;

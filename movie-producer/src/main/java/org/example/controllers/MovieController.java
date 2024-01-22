@@ -74,11 +74,11 @@ public class MovieController {
         if (movie.Id() == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Please pass the MovieId");
         }
-        if(!MovieType.NEW.equals(movie.movieType()))  {
+        if (!MovieType.NEW.equals(movie.movieType())) {
             Movie movieWithNewType = new Movie(movie.Id(), MovieType.NEW, movie.title(), movie.genres());
             movieService.sendMovie(movieWithNewType);
             return ResponseEntity.status(HttpStatus.CREATED).body(movieWithNewType);
-        }else {
+        } else {
             movieService.sendMovie(movie);
             return ResponseEntity.status(HttpStatus.CREATED).body(movie);
         }
@@ -98,12 +98,12 @@ public class MovieController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Please pass the MovieId");
         }
 
-        if (!MovieType.UPDATE.equals(movie.movieType()))  {
+        if (!MovieType.UPDATE.equals(movie.movieType())) {
             log.info("Inside the if block");
-           Movie movieWithUpdate = new Movie(movie.Id(), MovieType.UPDATE, movie.title(), movie.genres());
+            Movie movieWithUpdate = new Movie(movie.Id(), MovieType.UPDATE, movie.title(), movie.genres());
             movieService.sendMovie(movieWithUpdate);
             return ResponseEntity.status(HttpStatus.OK).body(movieWithUpdate);
-        }else {
+        } else {
 
             movieService.sendMovie(movie);
             return ResponseEntity.status(HttpStatus.OK).body(movie);

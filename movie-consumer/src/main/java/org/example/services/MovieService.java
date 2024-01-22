@@ -22,9 +22,9 @@ public class MovieService {
 
     private MovieRepository movieRepository;
 
-    public MovieService(ObjectMapper objectMapper, MovieRepository movieRepository){
-        this.objectMapper=objectMapper;
-        this.movieRepository=movieRepository;
+    public MovieService(ObjectMapper objectMapper, MovieRepository movieRepository) {
+        this.objectMapper = objectMapper;
+        this.movieRepository = movieRepository;
     }
 
     /**

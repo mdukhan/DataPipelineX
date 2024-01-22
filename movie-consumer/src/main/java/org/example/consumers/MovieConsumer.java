@@ -18,8 +18,8 @@ public class MovieConsumer {
 
     MovieService movieService;
 
-    public MovieConsumer(MovieService movieService){
-        this.movieService=movieService;
+    public MovieConsumer(MovieService movieService) {
+        this.movieService = movieService;
     }
 
     /**
