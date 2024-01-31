@@ -1,6 +1,10 @@
 spring:
   profiles:
     active: local
+  servlet:
+    multipart:
+      max-file-size: 500MB
+      max-request-size: 500MB
 server:
   port: 8080
 ---
@@ -9,8 +13,18 @@ spring:
     activate:
       on-profile: local
   kafka:
-    topic: movies
+    topics:
+      movies: movies
+      error: error-topic
+      response: movie-response-topic
+
     producer:
       bootstrap-servers: localhost:9092
       key-serializer: org.apache.kafka.common.serialization.IntegerSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
+    consumer:
+      bootstrap-servers:
+        -   localhost:9095,localhost:9096,localhost:9097,localhost:9092
+      key-deserializer: org.apache.kafka.common.serialization.IntegerDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      group-id: movies-listener-group

@@ -1,7 +1,5 @@
 package org.example.records;
 
 public enum MovieType {
-
-    NEW,
-    UPDATE
+    NEW, UPDATE, DELETE, GET
 }

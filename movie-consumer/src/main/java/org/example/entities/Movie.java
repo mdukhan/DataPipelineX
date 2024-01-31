@@ -7,6 +7,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.web.bind.annotation.PutMapping;
 
+import java.util.Collection;
+
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
@@ -15,7 +17,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 public class Movie {
 
     @Id
-    @GeneratedValue
     private Integer Id;
     @Enumerated(EnumType.STRING)
     private MovieType movieType;

@@ -9,33 +9,52 @@ spring:
     activate:
       on-profile: local
   kafka:
+    topic: movies
     consumer:
       bootstrap-servers: localhost:9092
       key-deserializer: org.apache.kafka.common.serialization.IntegerDeserializer
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       group-id: movies-listener-group
-
     producer:
       bootstrap-servers:
-        -   localhost:9095,localhost:9096,localhost:9097,localhost:9092
+        - localhost:9095
+        - localhost:9096
+        - localhost:9097
       key-serializer: org.apache.kafka.common.serialization.IntegerSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
+  jpa:
+    database: h2
+    database-platform: org.hibernate.dialect.H2Dialect
+    generate-ddl: true
+  h2:
+    console:
+      enabled: true
 
-    topics:
-      movies: movies
-      error: error-topic
-      response: movie-response-topic
-
+---
+spring:
+  profiles: postgres
   datasource:
     url: jdbc:postgresql://localhost:5432/mydatabase
     driver-class-name: org.postgresql.Driver
     username: myuser
     password: mypassword
-
   jpa:
     database: postgresql
     hibernate:
       ddl-auto: update
 
-
-
+---
+spring:
+  profiles: mysql
+  datasource:
+    url: jdbc:mysql://localhost:3306/mydatabase
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: myuser
+    password: mypassword
+  jpa:
+    database: mysql
+    hibernate:
+      ddl-auto: update

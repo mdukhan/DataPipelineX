@@ -2,5 +2,7 @@ package org.example.entities;
 
 public enum MovieType {
     NEW,
-    UPDATE
+    UPDATE,
+    DELETE,
+    GET
 }

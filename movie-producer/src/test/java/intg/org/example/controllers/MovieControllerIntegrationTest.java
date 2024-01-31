@@ -86,7 +86,7 @@ class MovieControllerIntegrationTest {
         headers.set("content-type", MediaType.APPLICATION_JSON.toString());
         HttpEntity<Movie> request = new HttpEntity<>(movie, headers);
 
-        var responseEntity = restTemplate.exchange("/v1/movie", HttpMethod.POST, request, Movie.class);
+        var responseEntity = restTemplate.exchange("/add/movie", HttpMethod.POST, request, Movie.class);
 
         assertEquals(HttpStatus.CREATED, responseEntity.getStatusCode());
 

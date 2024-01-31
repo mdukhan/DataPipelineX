@@ -46,7 +46,7 @@ class MovieControllerUnitTest {
         when(movieService.sendMovie(isA(Movie.class))).thenReturn(null);
 
         //expect
-        mockMvc.perform(post("/v1/movie")
+        mockMvc.perform(post("/add/movie")
                         .content(json)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated());
@@ -67,7 +67,7 @@ class MovieControllerUnitTest {
         when(movieService.sendMovie(isA(Movie.class))).thenReturn(null);
         //expect
         String expectedErrorMessage = "Please pass the MovieId";
-        mockMvc.perform(post("/v1/movie")
+        mockMvc.perform(post("/add/movie")
                         .content(json)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is4xxClientError())

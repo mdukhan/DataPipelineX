@@ -10,17 +10,17 @@ docker-compose -f filename.yml up/down
 #######################################
 curl commands
 
-#Files
-curl -X POST -H "Content-Type: multipart/form-data" -F "file=@./movies_short.csv" http://localhost:8080/api/upload-csv-file
+#Files upload
+curl -X POST -H "Content-Type: multipart/form-data" -F "file=@./movies.csv" http://localhost:8080/api/upload-csv-file
 
 
-#Data
+#Data upload
 curl -X POST -H "Content-Type: text/plain" --data-binary @./movies_short.csv http://localhost:8080/api/upload-csv-file-1
 
 
-#JSON
+#JSON add
 curl -X POST \
-  http://localhost:8080/v1/movie \
+  http://localhost:8080/add/movie \
   -H 'Content-Type: application/json' \
   -d '{
     "Id": 1,
@@ -28,13 +28,39 @@ curl -X POST \
     "genres": "Sci-Fi"
 }'
 
+#JSON DELETE
+curl -X DELETE \
+  http://localhost:8080/delete/movie \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "Id": 1,
+    "title": "Inception",
+    "genres": "Sci-Fi"
+}'
+
+#JSON update
 curl -X PUT \
-  http://localhost:8080/v1/movie \
+  http://localhost:8080/update/movie \
   -H 'Content-Type: application/json' \
   -d '{
     "Id": 2,
     "title": "Toy Story",
     "genres": "Adventure"
 }'
+
+
+curl -X GET \
+  http://localhost:8080/get/movie \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "Id": 2,
+    "title": "Toy Story",
+    "genres": "Adventure"
+}'
+
+
+curl -X GET http://localhost:8080/get/movies/genres/Adventure
+curl -X GET http://localhost:8080/get/movies/title/Toy%20Story
+
 
 

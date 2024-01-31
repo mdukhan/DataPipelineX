@@ -13,8 +13,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.util.List;
+import java.io.InputStreamReader;
+
 
 /**
  * REST controller class for handling movie-related requests.
@@ -46,17 +48,16 @@ public class MovieController {
         if (csvFile.isEmpty()) {
             return ResponseEntity.badRequest().body("Please select a file to upload");
         }
-        try {
-            // Pass the MultipartFile to the MovieService for processing
-            List<Movie> movieList = movieService.getMovieListFromFile(csvFile);
-            for (Movie movie : movieList) {
-                movieService.sendMovieById(movieList, movie.Id());
-                log.info("Message sent successfully {}", ResponseEntity.status(HttpStatus.CREATED).body(movie));
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(csvFile.getInputStream()))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                movieService.sendMovie(movieService.parseCsvLine(line));
             }
-            return ResponseEntity.status(HttpStatus.CREATED).body(movieList.toString());
+
+            return ResponseEntity.status(HttpStatus.CREATED).body("File processed successfully");
         } catch (IOException e) {
             e.printStackTrace(); // Handle the exception appropriately in your application
-            return ResponseEntity.status(500).body("Error processing the file");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error processing the file");
         }
     }
 
@@ -67,8 +68,8 @@ public class MovieController {
      * @return ResponseEntity with the result of the movie addition operation.
      * @throws JsonProcessingException if there is an issue processing JSON.
      */
-    @PostMapping("/v1/movie")
-    public ResponseEntity<?> postMovie(@RequestBody @Valid Movie movie)
+    @PostMapping("/add/movie")
+    public ResponseEntity<?> addMovie(@RequestBody @Valid Movie movie)
             throws JsonProcessingException {
 
         if (movie.Id() == null) {
@@ -91,15 +92,14 @@ public class MovieController {
      * @return ResponseEntity with the result of the movie addition operation.
      * @throws JsonProcessingException if there is an issue processing JSON.
      */
-    @PutMapping("/v1/movie")
-    public ResponseEntity<?> putMovie(@RequestBody @Valid Movie movie) throws JsonProcessingException {
+    @PutMapping("/update/movie")
+    public ResponseEntity<?> updateMovie(@RequestBody @Valid Movie movie) throws JsonProcessingException {
 
         if (movie.Id() == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Please pass the MovieId");
         }
 
         if (!MovieType.UPDATE.equals(movie.movieType())) {
-            log.info("Inside the if block");
             Movie movieWithUpdate = new Movie(movie.Id(), MovieType.UPDATE, movie.title(), movie.genres());
             movieService.sendMovie(movieWithUpdate);
             return ResponseEntity.status(HttpStatus.OK).body(movieWithUpdate);
@@ -108,5 +108,64 @@ public class MovieController {
             movieService.sendMovie(movie);
             return ResponseEntity.status(HttpStatus.OK).body(movie);
         }
+    }
+
+    /**
+     * Deletes a movie based on the provided Movie object.
+     *
+     * @param movie The Movie object containing details of the movie to be deleted.
+     * @return ResponseEntity containing the deleted Movie object or an error message.
+     * @throws JsonProcessingException If there is an issue processing JSON.
+     */
+    @DeleteMapping("/delete/movie")
+    public ResponseEntity<?> deleteMovie(@RequestBody @Valid Movie movie) throws JsonProcessingException {
+        if (movie.Id() == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Please pass the MovieId");
+        }
+
+        if (!MovieType.DELETE.equals(movie.movieType())) {
+            Movie movieWithDELETE = new Movie(movie.Id(), MovieType.DELETE, movie.title(), movie.genres());
+            movieService.sendMovie(movieWithDELETE);
+            return ResponseEntity.status(HttpStatus.OK).body(movieWithDELETE);
+        } else {
+            movieService.sendMovie(movie);
+            return ResponseEntity.status(HttpStatus.OK).body(movie);
+        }
+    }
+
+    /**
+     * Retrieves movies based on specified genres.
+     *
+     * @param genres The genres to search for.
+     * @return ResponseEntity containing a JSON list of movies matching the given genres.
+     * @throws JsonProcessingException If there is an issue processing JSON.
+     * @throws InterruptedException If the thread is interrupted while sleeping.
+     */
+    @GetMapping("/get/movies/genres/{genres}")
+    public ResponseEntity<?> searchMoviesByGenres(@PathVariable String genres) throws JsonProcessingException, InterruptedException {
+        final int movieIdForSearchingGenres = -2;
+        Movie movieGetRequestByGenres = new Movie(movieIdForSearchingGenres, MovieType.GET, "", genres);
+        movieService.sendMovie(movieGetRequestByGenres);
+        Thread.sleep(300);
+        String jsonMoviesResponseList = movieService.getJsonResponse();
+        return ResponseEntity.status(HttpStatus.OK).body(jsonMoviesResponseList);
+    }
+
+    /**
+     * Retrieves movies based on specified title.
+     *
+     * @param title The title to search for.
+     * @return ResponseEntity containing a JSON list of movies matching the given title.
+     * @throws JsonProcessingException If there is an issue processing JSON.
+     * @throws InterruptedException If the thread is interrupted while sleeping.
+     */
+    @GetMapping("/get/movies/title/{title}")
+    public ResponseEntity<?> searchMoviesByTitle(@PathVariable String title) throws JsonProcessingException, InterruptedException {
+        final int movieIdForSearchingTitle = -1;
+        Movie movieGetRequestByTitle = new Movie(movieIdForSearchingTitle, MovieType.GET, title, ""); // Create a Movie object with necessary details
+        movieService.sendMovie(movieGetRequestByTitle);
+        Thread.sleep(300);
+        String jsonMoviesResponseList = movieService.getJsonResponse();
+        return ResponseEntity.status(HttpStatus.OK).body(jsonMoviesResponseList);
     }
 }

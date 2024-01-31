@@ -21,20 +21,15 @@ import java.util.concurrent.CompletableFuture;
 @Slf4j
 public class MovieProducer {
 
-
-    @Value("${spring.kafka.topic}")
+    ObjectMapper objectMapper;
+    @Value("${spring.kafka.topics.movies}")
     private String topic;
-
+    private KafkaTemplate<Integer, String> kafkaTemplate;
 
     public MovieProducer(KafkaTemplate<Integer, String> kafkaTemplate, ObjectMapper objectMapper) {
         this.kafkaTemplate = kafkaTemplate;
         this.objectMapper = objectMapper;
     }
-
-    private KafkaTemplate<Integer, String> kafkaTemplate;
-
-    ObjectMapper objectMapper;
-
 
     /**
      * Asynchronously sends a movie record to the configured Kafka topic.
@@ -78,7 +73,5 @@ public class MovieProducer {
      */
     private void handleSuccess(Integer key, String value, SendResult<Integer, String> result) {
         log.info("Message sent successfully for the key : {} and the value is {} , partition is {}", key, value);
-
     }
-
 }

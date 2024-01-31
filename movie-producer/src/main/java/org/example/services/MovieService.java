@@ -1,8 +1,10 @@
 package org.example.services;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.example.producers.MovieProducer;
+import org.example.producers.MovieRequestListener;
 import org.example.records.Movie;
 import org.example.records.MovieType;
 import org.springframework.kafka.support.SendResult;
@@ -18,60 +20,92 @@ import java.util.concurrent.CompletableFuture;
 @Slf4j
 public class MovieService {
 
+    /**
+     * Movie producer instance responsible for sending movie records to Kafka.
+     */
     private final MovieProducer movieProducer;
 
-    public MovieService(MovieProducer movieProducer) {
+    /**
+     * Movie request listener instance responsible for processing movie requests received from Kafka.
+     */
+   private final MovieRequestListener movieRequestListener;
+
+    /**
+     * Constructs a MovieService with the specified movie producer and movie request listener.
+     *
+     * @param movieProducer       The movie producer instance.
+     * @param movieRequestListener The movie request listener instance.
+     */
+    public MovieService(MovieProducer movieProducer, MovieRequestListener movieRequestListener) {
         this.movieProducer = movieProducer;
+        this.movieRequestListener = movieRequestListener;
     }
 
-    public Movie getMovie(List<Movie> movieRecordsList, int movieId) {
-        for (Movie movieRecord : movieRecordsList) {
-            if (movieId == movieRecord.Id()) {
-                log.info(String.format("Es wurde der Film: %s ausgewählt.", movieRecord.title()));
-                log.info(String.format(movieRecord.movieType().toString()));
-                log.info(String.format(movieRecord.genres().contains("|") ? "Genres: %s" : "Genre: %s", movieRecord.genres()));
-                log.info(movieRecord.toString());
-                return movieRecord;
-            }
+    /**
+     * Parses a CSV line and creates a Movie object.
+     *
+     * @param csvLine The CSV line to parse.
+     * @return A Movie object created from the CSV data.
+     * @throws IllegalArgumentException If the CSV line is invalid.
+     */
+    public Movie parseCsvLine(String csvLine) {
+        String[] values = csvLine.split(",");
+        if (values.length >= 3) {
+            return new Movie(Integer.parseInt(values[0]), MovieType.NEW, values[1], values[2]);
+        } else {
+            // Handle invalid CSV lines appropriately
+            throw new IllegalArgumentException("Invalid CSV line: " + csvLine);
         }
-        return null;
     }
 
-    public List<Movie> getMovieListFromPath(final String filePath) throws FileNotFoundException {
-        List<Movie> movieList = new ArrayList<>();
-        try (BufferedReader bufferedReader = new BufferedReader(new FileReader(filePath))) {
-            String line;
-            while ((line = bufferedReader.readLine()) != null) {
-                String[] values = line.split(",");
-                movieList.add(new Movie(Integer.parseInt(values[0]), MovieType.NEW, values[1], values[2]));
-            }
-        } catch (IOException e) {
-            throw new FileNotFoundException(filePath);
-        }
-        return movieList;
-    }
-
-    public List<Movie> getMovieListFromFile(MultipartFile file) throws IOException {
-        List<Movie> movieList = new ArrayList<>();
-        try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(file.getInputStream()))) {
-            String line;
-            while ((line = bufferedReader.readLine()) != null) {
-                String[] values = line.split(",");
-                movieList.add(new Movie(Integer.parseInt(values[0]), MovieType.NEW, values[1], values[2]));
-            }
-        }
-        return movieList;
-    }
-
-
-    public void sendMovieById(List<Movie> movieList, int Id) throws FileNotFoundException, JsonProcessingException {
-
-        Movie movie = getMovie(movieList, Id);
-        movieProducer.sendMovieRecord(movie);
-    }
-
+    /**
+     * Sends a movie to Kafka using the movie producer.
+     *
+     * @param movie The movie to send.
+     * @return A CompletableFuture representing the result of the send operation.
+     * @throws JsonProcessingException If there's an issue processing JSON data.
+     */
     public CompletableFuture<SendResult<Integer, String>> sendMovie(Movie movie) throws JsonProcessingException {
-
         return movieProducer.sendMovieRecord(movie);
+    }
+
+    /**
+     * Retrieves the list of movies from the movie request listener.
+     *
+     * @return The list of movies received from the consumer.
+     */
+   private List<Movie> getMovieListResponseFromConsumer(){
+        return movieRequestListener.getReceivedMoviesList();
+    }
+
+    /**
+     * Retrieves a JSON representation of the received movies.
+     *
+     * @return A JSON string representing the received movies.
+     * @throws JsonProcessingException If there's an issue processing JSON data.
+     */
+    public String getJsonResponse() throws JsonProcessingException {
+       return extractJsonFromMoviesList();
+    }
+
+    /**
+     * Extracts a JSON representation from the list of received movies and clears the list.
+     *
+     * @return A JSON string representing the received movies.
+     * @throws JsonProcessingException If there's an issue processing JSON data.
+     */
+    private String extractJsonFromMoviesList() throws JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        List<Movie> movies = getMovieListResponseFromConsumer();
+        String jsonList = objectMapper.writeValueAsString(movies);
+        clearListFromConsumer();
+        return jsonList;
+    }
+
+    /**
+     * Clears the list of received movies from the consumer.
+     */
+    private void clearListFromConsumer() {
+        movieRequestListener.clearList();
     }
 }
