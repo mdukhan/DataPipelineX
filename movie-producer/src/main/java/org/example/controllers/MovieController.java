@@ -61,6 +61,7 @@ public class MovieController {
         }
     }
 
+
     /**
      * Endpoint for adding a movie.
      *
@@ -104,7 +105,6 @@ public class MovieController {
             movieService.sendMovie(movieWithUpdate);
             return ResponseEntity.status(HttpStatus.OK).body(movieWithUpdate);
         } else {
-
             movieService.sendMovie(movie);
             return ResponseEntity.status(HttpStatus.OK).body(movie);
         }
@@ -126,10 +126,10 @@ public class MovieController {
         if (!MovieType.DELETE.equals(movie.movieType())) {
             Movie movieWithDELETE = new Movie(movie.Id(), MovieType.DELETE, movie.title(), movie.genres());
             movieService.sendMovie(movieWithDELETE);
-            return ResponseEntity.status(HttpStatus.OK).body(movieWithDELETE);
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body(movieWithDELETE);
         } else {
             movieService.sendMovie(movie);
-            return ResponseEntity.status(HttpStatus.OK).body(movie);
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body(movie);
         }
     }
 
@@ -139,7 +139,7 @@ public class MovieController {
      * @param genres The genres to search for.
      * @return ResponseEntity containing a JSON list of movies matching the given genres.
      * @throws JsonProcessingException If there is an issue processing JSON.
-     * @throws InterruptedException If the thread is interrupted while sleeping.
+     * @throws InterruptedException    If the thread is interrupted while sleeping.
      */
     @GetMapping("/get/movies/genres/{genres}")
     public ResponseEntity<?> searchMoviesByGenres(@PathVariable String genres) throws JsonProcessingException, InterruptedException {
@@ -157,7 +157,7 @@ public class MovieController {
      * @param title The title to search for.
      * @return ResponseEntity containing a JSON list of movies matching the given title.
      * @throws JsonProcessingException If there is an issue processing JSON.
-     * @throws InterruptedException If the thread is interrupted while sleeping.
+     * @throws InterruptedException    If the thread is interrupted while sleeping.
      */
     @GetMapping("/get/movies/title/{title}")
     public ResponseEntity<?> searchMoviesByTitle(@PathVariable String title) throws JsonProcessingException, InterruptedException {

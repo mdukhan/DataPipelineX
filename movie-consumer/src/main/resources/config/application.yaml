@@ -27,15 +27,15 @@ spring:
       response: movie-response-topic
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/mydatabase
-    driver-class-name: org.postgresql.Driver
-    username: myuser
-    password: mypassword
-
+    url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
   jpa:
-    database: postgresql
-    hibernate:
-      ddl-auto: update
+    database: h2
+    database-platform: org.hibernate.dialect.H2Dialect
+    generate-ddl: true
+  h2:
+    console:
+      enabled: true
 
 
 
