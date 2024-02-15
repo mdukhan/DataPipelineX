@@ -2,13 +2,13 @@ package org.example.controllers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.common.serialization.IntegerDeserializer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.example.records.Movie;
-import org.example.util.TestUtil;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,20 +22,27 @@ import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.kafka.test.utils.KafkaTestUtils;
 import org.springframework.test.context.TestPropertySource;
 
-
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
- * Integration test class for the MovieController using embedded Kafka and Spring Boot.
- */
+ * Integration tests for the MovieController class. This class focuses on testing the interactions
+ * between the application and Kafka for movie-related operations.
+ *
+ * <p>The tests leverage the EmbeddedKafkaBroker for a lightweight and isolated Kafka environment.
+ * Different ports are used for each broker to ensure that records from previous tests do not
+ * interfere with the current test. This helps in avoiding unintended consumption of records
+ * from unrelated topics, providing a clean and isolated testing environment for each scenario.
+ *
+ **/
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@EmbeddedKafka(topics = {"movies"}, partitions = 1)
+@EmbeddedKafka(topics = {"movies"}, partitions = 1, ports = 9093)
 @TestPropertySource(properties = {"spring.kafka.producer.bootstrap-servers=${spring.embedded.kafka.brokers}",
         "spring.kafka.admin.properties.bootstrap.servers=${spring.embedded.kafka.brokers}"})
-class MovieControllerIntegrationTest {
+public class MovieControllerUpdateIntegrationTest {
+
 
     @Autowired
     TestRestTemplate restTemplate;
@@ -69,26 +76,26 @@ class MovieControllerIntegrationTest {
         consumer.close();
     }
 
-
     /**
-     * Integration test for the POST endpoint to add a Movie.
-     * Sends a POST request, verifies the HTTP response, and checks the Kafka topic for the added movie.
+     * Integration test for the PUT endpoint to update a Movie.
+     * Sends a PUT request, verifies the HTTP response, and checks the Kafka topic for the updated movie.
+     * The test specifically waits for the record to arrive at the Kafka broker before performing assertions.
      *
      * @throws JsonProcessingException if there is an issue processing JSON
      */
     @Test
-    public void postMovie() throws JsonProcessingException {
+    public void updateMovie() throws JsonProcessingException {
 
-        Movie movie = TestUtil.movieRecord();
+        Movie movie = org.example.util.TestUtil.movieUpdateRecord();
 
         HttpHeaders headers = new HttpHeaders();
         String movieJson = objectMapper.writeValueAsString(movie);
         headers.set("content-type", MediaType.APPLICATION_JSON.toString());
         HttpEntity<Movie> request = new HttpEntity<>(movie, headers);
 
-        var responseEntity = restTemplate.exchange("/add/movie", HttpMethod.POST, request, Movie.class);
+        var responseEntity = restTemplate.exchange("/update/movie", HttpMethod.PUT, request, Movie.class);
 
-        assertEquals(HttpStatus.CREATED, responseEntity.getStatusCode());
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
 
         //Instantiate a consumer
         // Read the record , assert the count and parse the record and assert on it.
@@ -99,4 +106,5 @@ class MovieControllerIntegrationTest {
             assertEquals(movieJson, record.value());
         });
     }
+
 }
