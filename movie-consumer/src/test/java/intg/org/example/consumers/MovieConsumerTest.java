@@ -44,7 +44,7 @@ import static org.mockito.Mockito.*;
  * </p>
  */
 @SpringBootTest
-@EmbeddedKafka(topics = {"movies"}, partitions = 1)
+@EmbeddedKafka(topics = {"movies","error-topic","movie-response-topic"}, partitions = 1)
 @TestPropertySource(properties = {"spring.kafka.producer.bootstrap-servers=${spring.embedded.kafka.brokers}", "spring.kafka.consumer.bootstrap-servers=${spring.embedded.kafka.brokers}"})
 class MovieConsumerTest {
 

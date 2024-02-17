@@ -5,13 +5,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.example.records.Movie;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.example.records.Rating;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Component;
 
-import java.sql.PreparedStatement;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -19,14 +18,17 @@ import java.util.concurrent.CompletableFuture;
  */
 @Component
 @Slf4j
-public class MovieProducer {
+public class RecordsProducer {
 
     ObjectMapper objectMapper;
     @Value("${spring.kafka.topics.movies}")
-    private String topic;
+    private String moviesTopic;
+
+    @Value("${spring.kafka.topics.ratings}")
+    private String ratingsTopic;
     private KafkaTemplate<Integer, String> kafkaTemplate;
 
-    public MovieProducer(KafkaTemplate<Integer, String> kafkaTemplate, ObjectMapper objectMapper) {
+    public RecordsProducer(KafkaTemplate<Integer, String> kafkaTemplate, ObjectMapper objectMapper) {
         this.kafkaTemplate = kafkaTemplate;
         this.objectMapper = objectMapper;
     }
@@ -41,17 +43,40 @@ public class MovieProducer {
         Integer key = movie.Id();
         String jsonValue = objectMapper.writeValueAsString(movie);
 
-        ProducerRecord<Integer, String> producerRecord = new ProducerRecord<>(topic, key, jsonValue);
+        ProducerRecord<Integer, String> producerRecord = new ProducerRecord<>(moviesTopic, key, jsonValue);
         var completableFuture = kafkaTemplate.send(producerRecord);
         return completableFuture
                 .whenComplete((sendResult, throwable) -> {
                     if (throwable != null) {
-                        handleFailure(key, jsonValue, throwable);
+                        handleFailure( throwable);
                     } else {
-                        handleSuccess(key, jsonValue, sendResult);
+                        handleSuccess(key, jsonValue);
                     }
                 });
     }
+
+    public CompletableFuture<SendResult<Integer, String>> sendRatingRecord(Rating rating) throws JsonProcessingException {
+        //try {
+            String jsonValue = objectMapper.writeValueAsString(rating);
+
+            ProducerRecord<Integer, String> producerRecord = new ProducerRecord<>(ratingsTopic, jsonValue);
+            var completableFuture = kafkaTemplate.send(producerRecord);
+            return completableFuture
+                    .whenComplete((sendResult, throwable) -> {
+                        if (throwable != null) {
+                            handleFailure(throwable);
+                        } else {
+                            handleSuccess(jsonValue);
+                        }
+                    });
+       // }
+
+        //catch (NullPointerException e){
+        //}
+       // return null;
+    }
+
+
 
     /**
      * Handles failure during the asynchronous send operation.
@@ -60,7 +85,7 @@ public class MovieProducer {
      * @param value The value of the message.
      * @param ex    The exception that occurred.
      */
-    private void handleFailure(Integer key, String value, Throwable ex) {
+    private void handleFailure(Throwable ex) {
         log.error("Error sending the Message and the exception is {}", ex.getMessage());
     }
 
@@ -71,7 +96,11 @@ public class MovieProducer {
      * @param value  The value of the message.
      * @param result The result of the send operation.
      */
-    private void handleSuccess(Integer key, String value, SendResult<Integer, String> result) {
+    private void handleSuccess(Integer key, String value) {
         log.info("Message sent successfully for the key : {} and the value is {} , partition is {}", key, value);
+    }
+
+    private void handleSuccess(String value) {
+        handleSuccess(null, value);
     }
 }

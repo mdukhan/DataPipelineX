@@ -3,16 +3,13 @@ package org.example.services;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
-import org.example.producers.MovieProducer;
+import org.example.producers.RecordsProducer;
 import org.example.producers.MovieRequestListener;
 import org.example.records.Movie;
 import org.example.records.MovieType;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.*;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -23,7 +20,7 @@ public class MovieService {
     /**
      * Movie producer instance responsible for sending movie records to Kafka.
      */
-    private final MovieProducer movieProducer;
+    private final RecordsProducer recordsProducer;
 
     /**
      * Movie request listener instance responsible for processing movie requests received from Kafka.
@@ -33,11 +30,11 @@ public class MovieService {
     /**
      * Constructs a MovieService with the specified movie producer and movie request listener.
      *
-     * @param movieProducer       The movie producer instance.
+     * @param recordsProducer       The movie producer instance.
      * @param movieRequestListener The movie request listener instance.
      */
-    public MovieService(MovieProducer movieProducer, MovieRequestListener movieRequestListener) {
-        this.movieProducer = movieProducer;
+    public MovieService(RecordsProducer recordsProducer, MovieRequestListener movieRequestListener) {
+        this.recordsProducer = recordsProducer;
         this.movieRequestListener = movieRequestListener;
     }
 
@@ -48,7 +45,7 @@ public class MovieService {
      * @return A Movie object created from the CSV data.
      * @throws IllegalArgumentException If the CSV line is invalid.
      */
-    public Movie parseCsvLine(String csvLine) {
+    public Movie parseMoviesCsvLine(String csvLine) {
         String[] values = csvLine.split(",");
         if (values.length >= 3) {
             return new Movie(Integer.parseInt(values[0]), MovieType.NEW, values[1], values[2]);
@@ -66,7 +63,7 @@ public class MovieService {
      * @throws JsonProcessingException If there's an issue processing JSON data.
      */
     public CompletableFuture<SendResult<Integer, String>> sendMovie(Movie movie) throws JsonProcessingException {
-        return movieProducer.sendMovieRecord(movie);
+        return recordsProducer.sendMovieRecord(movie);
     }
 
     /**

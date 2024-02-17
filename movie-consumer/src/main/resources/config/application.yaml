@@ -25,6 +25,7 @@ spring:
       movies: movies
       error: error-topic
       response: movie-response-topic
+      ratings: ratings
 
   datasource:
     url: jdbc:h2:mem:testdb

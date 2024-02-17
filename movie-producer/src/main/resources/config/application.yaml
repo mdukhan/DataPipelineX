@@ -3,8 +3,8 @@ spring:
     active: local
   servlet:
     multipart:
-      max-file-size: 500MB
-      max-request-size: 500MB
+      max-file-size: 1000MB
+      max-request-size: 1000MB
 server:
   port: 8080
 ---
@@ -17,6 +17,7 @@ spring:
       movies: movies
       error: error-topic
       response: movie-response-topic
+      ratings: ratings
 
     producer:
       bootstrap-servers: localhost:9092

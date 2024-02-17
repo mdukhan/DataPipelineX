@@ -14,6 +14,9 @@ curl commands
 curl -X POST -H "Content-Type: multipart/form-data" -F "file=@./movies.csv" http://localhost:8080/api/upload-csv-file
 
 
+curl -X POST -H "Content-Type: multipart/form-data" -F "file=@./ratings.csv" http://localhost:8080//api/upload-csv-file/ratings
+
+
 #Data upload
 curl -X POST -H "Content-Type: text/plain" --data-binary @./movies_short.csv http://localhost:8080/api/upload-csv-file-1
 

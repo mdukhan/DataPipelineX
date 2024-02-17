@@ -1,7 +1,6 @@
 package org.example.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.example.controllers.MovieController;
 import org.example.records.Movie;
 import org.example.services.MovieService;
 import org.junit.jupiter.api.Test;
@@ -22,7 +21,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.web.multipart.MultipartFile;
 
 /**
  * Unit tests for the {@link MovieController} class.
@@ -93,7 +91,7 @@ class MovieControllerUnitTest {
         String csvContent = "2,Jumanji (1995),Adventure|Children|Fantasy";
         MockMultipartFile file = new MockMultipartFile("file", "test.csv", "text/csv", csvContent.getBytes());
         // Expect
-        when(movieService.parseCsvLine(any(String.class))).thenReturn(movie);
+        when(movieService.parseMoviesCsvLine(any(String.class))).thenReturn(movie);
         mockMvc.perform(
                         multipart("/api/upload-csv-file") // Use multipart here for file upload
                                 .file(file)

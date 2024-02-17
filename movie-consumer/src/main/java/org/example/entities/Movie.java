@@ -22,4 +22,5 @@ public class Movie {
     private MovieType movieType;
     private String title;
     private String genres;
+    private Double averageRating;
 }

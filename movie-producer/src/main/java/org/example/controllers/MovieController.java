@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.records.Movie;
 import org.example.records.MovieType;
 import org.example.services.MovieService;
+import org.example.services.RatingService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -27,13 +28,16 @@ public class MovieController {
 
     private final MovieService movieService;
 
+    private RatingService ratingService;
+
     /**
      * Constructor for MovieController.
      *
      * @param movieService The MovieService to be injected.
      */
-    public MovieController(MovieService movieService) {
+    public MovieController(MovieService movieService,RatingService ratingService) {
         this.movieService = movieService;
+        this.ratingService=ratingService;
     }
 
 
@@ -43,7 +47,7 @@ public class MovieController {
      * @param csvFile The CSV file containing movie data.
      * @return ResponseEntity with the result of the file upload operation.
      */
-    @PostMapping("/api/upload-csv-file")
+    @PostMapping("/api/upload-csv-file/movies")
     public ResponseEntity<String> postMoviesFromCSV(@RequestParam("file") MultipartFile csvFile) {
         if (csvFile.isEmpty()) {
             return ResponseEntity.badRequest().body("Please select a file to upload");
@@ -51,9 +55,26 @@ public class MovieController {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(csvFile.getInputStream()))) {
             String line;
             while ((line = reader.readLine()) != null) {
-                movieService.sendMovie(movieService.parseCsvLine(line));
+                movieService.sendMovie(movieService.parseMoviesCsvLine(line));
             }
 
+            return ResponseEntity.status(HttpStatus.CREATED).body("File processed successfully");
+        } catch (IOException e) {
+            e.printStackTrace(); // Handle the exception appropriately in your application
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error processing the file");
+        }
+    }
+
+    @PostMapping("/api/upload-csv-file/ratings")
+    public ResponseEntity<String> postRatingsFromCSV(@RequestParam("file") MultipartFile csvFile) {
+        if (csvFile.isEmpty()) {
+            return ResponseEntity.badRequest().body("Please select a file to upload");
+        }
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(csvFile.getInputStream()))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                ratingService.sendRatingRecord(ratingService.parseRatingCsvLine(line));
+            }
             return ResponseEntity.status(HttpStatus.CREATED).body("File processed successfully");
         } catch (IOException e) {
             e.printStackTrace(); // Handle the exception appropriately in your application
