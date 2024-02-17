@@ -93,7 +93,7 @@ class MovieControllerUnitTest {
         // Expect
         when(movieService.parseMoviesCsvLine(any(String.class))).thenReturn(movie);
         mockMvc.perform(
-                        multipart("/api/upload-csv-file") // Use multipart here for file upload
+                        multipart("/api/upload-csv-file/movies") // Use multipart here for file upload
                                 .file(file)
                                 .contentType(MediaType.MULTIPART_FORM_DATA)
                 )
@@ -114,7 +114,7 @@ class MovieControllerUnitTest {
         MockMultipartFile file = new MockMultipartFile("file", "test.csv", "text/csv", emptyString.getBytes());
         // Expect
         mockMvc.perform(
-                        multipart("/api/upload-csv-file").file(file)
+                        multipart("/api/upload-csv-file/movies").file(file)
                                 .contentType(MediaType.MULTIPART_FORM_DATA)
                 )
                 .andExpect(status().isBadRequest())

@@ -28,16 +28,15 @@ public class MovieController {
 
     private final MovieService movieService;
 
-    private RatingService ratingService;
+
 
     /**
      * Constructor for MovieController.
      *
      * @param movieService The MovieService to be injected.
      */
-    public MovieController(MovieService movieService,RatingService ratingService) {
+    public MovieController(MovieService movieService) {
         this.movieService = movieService;
-        this.ratingService=ratingService;
     }
 
 
@@ -65,22 +64,7 @@ public class MovieController {
         }
     }
 
-    @PostMapping("/api/upload-csv-file/ratings")
-    public ResponseEntity<String> postRatingsFromCSV(@RequestParam("file") MultipartFile csvFile) {
-        if (csvFile.isEmpty()) {
-            return ResponseEntity.badRequest().body("Please select a file to upload");
-        }
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(csvFile.getInputStream()))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                ratingService.sendRatingRecord(ratingService.parseRatingCsvLine(line));
-            }
-            return ResponseEntity.status(HttpStatus.CREATED).body("File processed successfully");
-        } catch (IOException e) {
-            e.printStackTrace(); // Handle the exception appropriately in your application
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error processing the file");
-        }
-    }
+
 
 
     /**
